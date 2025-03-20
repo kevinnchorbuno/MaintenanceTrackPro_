@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Engineer Dashboard</h2>
+        <p class="text-muted">Welcome, {{ current_user.username }}! Monitor equipment health and manage maintenance tasks.</p>
+    </div>
+</div>
+
+<!-- Equipment Health -->
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+        <!-- Equipment List -->
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Equipment List</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for equipment in equipment_list %}
+                        <a href="{{ url_for('equipment.view', id=equipment.id) }}" class="list-group-item list-group-item-action {% if selected_equipment and selected_equipment.id == equipment.id %}active{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ equipment.name }}</h6>
+                                <span class="badge bg-{% if equipment.health_score >= 70 %}success{% elif equipment.health_score >= 60 %}warning{% else %}danger{% endif %}">
+                                    {{ equipment.health_score|round|int }}%
+                                </span>
+                            </div>
+                            <div class="health-bar-container">
+                                <div class="health-bar health-status-{% if equipment.health_score >= 70 %}healthy{% elif equipment.health_score >= 60 %}warning{% else %}critical{% endif %}" style="width: {{ equipment.health_score }}%"></div>
+                            </div>
+                        </a>
+                    {% else %}
+                        <div class="list-group-item">
+                            <p class="text-muted text-center mb-0">No equipment found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('equipment.add') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i>Add Equipment
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8 col-md-12">
+        <!-- Selected Equipment Health Details -->
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    {% if selected_equipment %}
+                        <i class="fas fa-heartbeat me-2"></i>{{ selected_equipment.name }} Health
+                    {% else %}
+                        <i class="fas fa-heartbeat me-2"></i>Equipment Health
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if selected_equipment %}
+                    <div class="row">
+                        <div class="col-md-5 col-lg-4 mb-3 mb-md-0">
+                            {% if selected_equipment.image_path %}
+                                <img src="{{ url_for('static', filename=selected_equipment.image_path) }}" alt="{{ selected_equipment.name }}" class="img-fluid mb-3 equipment-img">
+                            {% else %}
+                                <div class="text-center p-4 mb-3 bg-light">
+                                    <i class="fas fa-cog fa-5x text-secondary"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('equipment.view', id=selected_equipment.id) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-info-circle me-1"></i>View Details
+                                </a>
+                                <a href="{{ url_for('equipment.update_health', id=selected_equipment.id) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-sync me-1"></i>Update Health
+                                </a>
+                                <a href="{{ url_for('maintenance.add', equipment_id=selected_equipment.id) }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-tools me-1"></i>Schedule Maintenance
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-7 col-lg-8">
+                            <h4>Health Score: 
+                                <span class="badge bg-{% if selected_equipment.health_score >= 70 %}success{% elif selected_equipment.health_score >= 60 %}warning{% else %}danger{% endif %}">
+                                    {{ selected_equipment.health_score|round|int }}%
+                                </span>
+                            </h4>
+                            
+                            <div class="progress mb-4" style="height: 30px;">
+                                <div class="progress-bar bg-{% if selected_equipment.health_score >= 70 %}success{% elif selected_equipment.health_score >= 60 %}warning{% else %}danger{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ selected_equipment.health_score }}%"
+                                     aria-valuenow="{{ selected_equipment.health_score|round|int }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ selected_equipment.health_score|round|int }}%
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-3 equipment-description-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Description</h5>
+                                    <div class="description-container">
+                                        <p class="mb-0">{{ selected_equipment.description or 'No description available.' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card equipment-status-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Status</h5>
+                                    <p class="text-{% if selected_equipment.health_score >= 70 %}success{% elif selected_equipment.health_score >= 60 %}warning{% else %}danger{% endif %} mb-0">
+                                        <i class="fas fa-circle me-1"></i>
+                                        {% if selected_equipment.health_score >= 70 %}
+                                            Healthy
+                                        {% elif selected_equipment.health_score >= 60 %}
+                                            Warning - Maintenance Recommended
+                                        {% else %}
+                                            Critical - Immediate Attention Required
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center p-5">
+                        <i class="fas fa-heartbeat fa-5x text-muted mb-3"></i>
+                        <p>No equipment selected. Please select equipment from the list.</p>
+                        <a href="{{ url_for('equipment.add') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add New Equipment
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Maintenance and Notifications -->
+<div class="row">
+    <!-- Upcoming Maintenance -->
+    <div class="col-lg-6 col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Upcoming Maintenance Tasks</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if maintenance_tasks %}
+                    <div class="list-group list-group-flush">
+                        {% for task in maintenance_tasks %}
+                            <a href="{{ url_for('maintenance.view', id=task.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ task.title }}</h6>
+                                    <div>
+                                        <span class="badge priority-{{ task.priority }}">{{ task.priority|capitalize }}</span>
+                                        <span class="badge bg-{% if task.status == 'scheduled' %}warning{% elif task.status == 'in_progress' %}info{% else %}secondary{% endif %} ms-1">
+                                            {{ task.status|replace('_', ' ')|capitalize }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="mb-1 small text-truncate">{{ task.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small>Equipment: <strong>{{ task.equipment.name }}</strong></small>
+                                    {% if task.due_date %}
+                                        <small class="text-{% if task.is_overdue() %}danger{% else %}muted{% endif %}">
+                                            {% if task.is_overdue() %}<i class="fas fa-exclamation-circle me-1"></i>{% endif %}
+                                            Due: {{ task.due_date.strftime('%Y-%m-%d') }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-0">No upcoming maintenance tasks.</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span class="small text-muted">Showing {{ maintenance_tasks|length }} tasks</span>
+                <a href="{{ url_for('maintenance.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-1"></i>View All Tasks
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Notifications -->
+    <div class="col-lg-6 col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Recent Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                            <div class="list-group-item notification-item notification-{{ notification.type }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ notification.title }}</h6>
+                                    <small>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <p class="mb-1">{{ notification.message }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">No recent notifications.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

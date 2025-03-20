@@ -1,0 +1,2 @@
+mkdir -p app/static/images/equipment app/static/images/qrcodes
+touch app/static/images/equipment/.gitkeep app/static/images/qrcodes/.gitkeep

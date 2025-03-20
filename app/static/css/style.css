@@ -1,0 +1,504 @@
+/* General Styles */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card Styles */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header-tabs {
+    margin-bottom: 0;
+}
+
+/* Health Status Colors */
+.health-bar {
+    height: 10px;
+    border-radius: 5px;
+    margin: 8px 0;
+}
+
+.health-bar-container {
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.health-status-healthy {
+    background-color: #28a745;
+}
+
+.health-status-warning {
+    background-color: #ffc107;
+}
+
+.health-status-critical {
+    background-color: #dc3545;
+}
+
+/* Dashboard Styles */
+.stats-card {
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-card-primary {
+    border-left-color: #007bff;
+}
+
+.stats-card-success {
+    border-left-color: #28a745;
+}
+
+.stats-card-warning {
+    border-left-color: #ffc107;
+}
+
+.stats-card-danger {
+    border-left-color: #dc3545;
+}
+
+.stats-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+/* Equipment Styles */
+.equipment-card {
+    margin-bottom: 20px;
+}
+
+.equipment-img {
+    max-height: 150px;
+    object-fit: contain;
+}
+
+.qr-code-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.qr-code-img {
+    max-width: 200px;
+}
+
+/* Maintenance Styles */
+.priority-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+.priority-low {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.priority-medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.priority-high {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.priority-critical {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Notification Styles */
+.notification-item {
+    border-left: 3px solid;
+    padding-left: 15px;
+}
+
+.notification-info {
+    border-left-color: #17a2b8;
+}
+
+.notification-warning {
+    border-left-color: #ffc107;
+}
+
+.notification-critical {
+    border-left-color: #dc3545;
+}
+
+/* Auth Pages */
+.auth-card {
+    max-width: 450px;
+    margin: 40px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .stats-card {
+        margin-bottom: 20px;
+    }
+}
+
+/* Main Styles for MaintenanceTrackPro */
+
+/* Health status indicators */
+.health-bar-container {
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.health-bar {
+    height: 100%;
+    border-radius: 5px;
+}
+
+.health-status-healthy {
+    background-color: #28a745;
+}
+
+.health-status-warning {
+    background-color: #ffc107;
+}
+
+.health-status-critical {
+    background-color: #dc3545;
+}
+
+/* Priority badges */
+.priority-high {
+    background-color: #dc3545;
+}
+
+.priority-medium {
+    background-color: #ffc107;
+}
+
+.priority-low {
+    background-color: #28a745;
+}
+
+/* Notification types */
+.notification-warning {
+    border-left: 3px solid #ffc107;
+}
+
+.notification-critical {
+    border-left: 3px solid #dc3545;
+}
+
+.notification-info {
+    border-left: 3px solid #17a2b8;
+}
+
+.notification-success {
+    border-left: 3px solid #28a745;
+}
+
+/* Cards with stats */
+.stats-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-card .stats-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.stats-card .stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stats-card .stats-label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* QR Code styling */
+.qr-code-container {
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.qr-code-container img {
+    max-width: 100%;
+}
+
+/* Dashboard layout improvements */
+.dashboard-container {
+    margin-bottom: 30px;
+}
+
+.dashboard-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Form improvements */
+.form-required label::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Equipment gallery styling */
+.equipment-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.equipment-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.equipment-image {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.equipment-placeholder {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 180px;
+}
+
+/* Timeline for activity feed */
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.25rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    padding-left: 0.5rem;
+}
+
+/* User profile styles */
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background-color: var(--bs-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-initials {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 767.98px) {
+    .stats-card .stats-icon {
+        font-size: 2rem;
+    }
+    
+    .stats-card .stats-number {
+        font-size: 1.5rem;
+    }
+    
+    .equipment-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* Loading Overlay */
+#loading-overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+#loading-overlay.fade-in {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Form Animations */
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Description container for equipment details */
+.description-container {
+    max-height: 80px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 0;
+}
+
+.equipment-description-card {
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.equipment-description-card .card-body {
+    padding: 0.75rem;
+}
+
+.equipment-description-card .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.equipment-status-card {
+    height: auto;
+}
+
+.equipment-status-card .card-body {
+    padding: 0.75rem;
+}
+
+.equipment-status-card .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.equipment-status-card p {
+    font-size: 0.9rem;
+}
+
+/* Mobile optimizations */
+@media (max-width: 767.98px) {
+    .stats-card {
+        margin-bottom: 20px;
+    }
+    
+    .equipment-img {
+        max-height: 200px;
+        object-fit: contain;
+        margin: 0 auto;
+        display: block;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .progress {
+        height: 25px !important;
+    }
+    
+    h4 {
+        font-size: 1.4rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    /* Better touch targets for mobile */
+    .list-group-item {
+        padding: 12px 15px;
+    }
+    
+    /* Improve notification display on mobile */
+    .notification-item {
+        padding: 10px;
+    }
+    
+    /* Enhance readability on small screens */
+    .description-container {
+        max-height: 120px;
+    }
+}
+
+/* Enhance touch experience on mobile */
+@media (max-width: 576px) {
+    .btn {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .btn-sm {
+        padding: 0.35rem 0.5rem;
+    }
+    
+    /* Larger touch targets on very small screens */
+    .list-group-item {
+        padding: 15px;
+    }
+} 

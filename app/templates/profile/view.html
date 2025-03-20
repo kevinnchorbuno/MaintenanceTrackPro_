@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-user me-2"></i>My Profile</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{{ url_for('profile.edit') }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-1"></i>Edit Profile
+            </a>
+            <a href="{{ url_for('profile.change_password') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-key me-1"></i>Change Password
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm animate__animated animate__fadeInLeft">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>User Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="avatar-circle mx-auto mb-3">
+                        <span class="avatar-initials">{{ current_user.username[0]|upper }}</span>
+                    </div>
+                    <h4>{{ current_user.username }}</h4>
+                    <p class="badge bg-primary">{{ current_user.role|capitalize }}</p>
+                </div>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-envelope me-2"></i>Email</span>
+                        <span>{{ current_user.email }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-calendar me-2"></i>Joined</span>
+                        <span>{{ current_user.created_at.strftime('%Y-%m-%d') }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-tasks me-2"></i>Assigned Tasks</span>
+                        <span>{{ total_tasks_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-check-circle me-2"></i>Completed</span>
+                        <span>{{ completed_tasks_count }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Metrics -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeInUp">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Performance Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="completion-circle mb-4 mx-auto" data-value="{{ completion_rate|round|int }}">
+                    <div class="completion-circle-inner">
+                        <div class="completion-percent">{{ completion_rate|round|int }}%</div>
+                        <div class="completion-label">Completion Rate</div>
+                    </div>
+                </div>
+                
+                <h6 class="text-center mb-3">Task Breakdown</h6>
+                <div class="progress mb-3" style="height: 25px;">
+                    {% set completed_percent = (completed_tasks_count / total_tasks_count * 100) if total_tasks_count > 0 else 0 %}
+                    {% set in_progress_count = completed_tasks_count|int - total_tasks_count|int %}
+                    {% set in_progress_percent = (in_progress_count / total_tasks_count * 100) if total_tasks_count > 0 else 0 %}
+                    {% set pending_percent = 100 - completed_percent - in_progress_percent %}
+                    
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ completed_percent }}%" 
+                        aria-valuenow="{{ completed_percent }}" aria-valuemin="0" aria-valuemax="100">Completed</div>
+                    
+                    <div class="progress-bar bg-info" role="progressbar" style="width: {{ in_progress_percent }}%" 
+                        aria-valuenow="{{ in_progress_percent }}" aria-valuemin="0" aria-valuemax="100">In Progress</div>
+                    
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ pending_percent }}%" 
+                        aria-valuenow="{{ pending_percent }}" aria-valuemin="0" aria-valuemax="100">Pending</div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="small text-success">Completed</div>
+                        <h4>{{ completed_tasks_count }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-info">In Progress</div>
+                        <h4>{{ in_progress_count }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-warning">Pending</div>
+                        <h4>{{ total_tasks_count - completed_tasks_count - in_progress_count }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeInRight">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_tasks %}
+                    <div class="timeline">
+                        {% for task in recent_tasks %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% elif task.status == 'cancelled' %}secondary{% else %}warning{% endif %}"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">{{ task.title }}</h6>
+                                    <div class="text-muted small mb-1">
+                                        <i class="fas fa-clock me-1"></i>{{ task.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% elif task.status == 'cancelled' %}secondary{% else %}warning{% endif %}">
+                                            {{ task.status|replace('_', ' ')|capitalize }}
+                                        </span>
+                                        <span class="badge priority-{{ task.priority }}">
+                                            {{ task.priority|capitalize }}
+                                        </span>
+                                    </div>
+                                    <p class="small text-truncate">{{ task.description }}</p>
+                                    <a href="{{ url_for('maintenance.view', id=task.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-clipboard fa-3x mb-3"></i>
+                        <p>No recent activity found.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        background-color: var(--bs-primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .avatar-initials {
+        font-size: 42px;
+        font-weight: bold;
+    }
+    
+    .completion-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: conic-gradient(var(--bs-primary) calc(var(--value) * 1%), #e9ecef 0);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        --value: 0;
+    }
+    
+    .completion-circle[data-value] {
+        --value: attr(data-value);
+    }
+    
+    .completion-circle-inner {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background-color: var(--bs-white);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .completion-percent {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--bs-primary);
+    }
+    
+    .completion-label {
+        font-size: 14px;
+        color: var(--bs-secondary);
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -1.25rem;
+        top: 0.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .timeline-content {
+        padding-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update completion circle with CSS variable using JavaScript
+        const completionCircle = document.querySelector('.completion-circle');
+        if (completionCircle) {
+            const value = completionCircle.getAttribute('data-value');
+            completionCircle.style.setProperty('--value', value);
+        }
+    });
+</script>
+{% endblock %} 

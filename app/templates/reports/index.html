@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-chart-pie me-2"></i>Reports Dashboard</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{{ url_for('reports.equipment_health') }}" class="btn btn-outline-primary">
+                <i class="fas fa-heartbeat me-1"></i>Equipment Health
+            </a>
+            <a href="{{ url_for('reports.maintenance_efficiency') }}" class="btn btn-outline-primary">
+                <i class="fas fa-chart-line me-1"></i>Maintenance Efficiency
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment Health Status -->
+<div class="row mb-4">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Equipment Health Status</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="chart-container flex-grow-1" style="position: relative; height:220px;">
+                    <canvas id="equipment-health-chart" data-stats="{{ equipment_stats|tojson }}"></canvas>
+                </div>
+                <div class="row text-center mt-3">
+                    <div class="col-4">
+                        <div class="small text-success">Healthy</div>
+                        <h4>{{ equipment_stats.healthy }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-warning">Warning</div>
+                        <h4>{{ equipment_stats.warning }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-danger">Critical</div>
+                        <h4>{{ equipment_stats.critical }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('reports.equipment_health') }}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-arrow-right me-1"></i>View Detailed Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Status -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn animate__delay-1s">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Maintenance Status</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="chart-container flex-grow-1" style="position: relative; height:220px;">
+                    <canvas id="maintenance-status-chart" data-stats="{{ maintenance_stats|tojson }}"></canvas>
+                </div>
+                <div class="row text-center mt-3">
+                    <div class="col-3">
+                        <div class="small text-warning">Scheduled</div>
+                        <h4>{{ maintenance_stats.scheduled }}</h4>
+                    </div>
+                    <div class="col-3">
+                        <div class="small text-info">In Progress</div>
+                        <h4>{{ maintenance_stats.in_progress }}</h4>
+                    </div>
+                    <div class="col-3">
+                        <div class="small text-success">Completed</div>
+                        <h4>{{ maintenance_stats.completed }}</h4>
+                    </div>
+                    <div class="col-3">
+                        <div class="small text-secondary">Cancelled</div>
+                        <h4>{{ maintenance_stats.cancelled }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('reports.maintenance_efficiency') }}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-arrow-right me-1"></i>View Efficiency Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Roles -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn animate__delay-2s">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Distribution</h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="chart-container flex-grow-1" style="position: relative; height:220px;">
+                    <canvas id="user-roles-chart" data-stats="{{ user_stats|tojson }}"></canvas>
+                </div>
+                <div class="row text-center mt-3">
+                    <div class="col-4">
+                        <div class="small text-primary">Boss</div>
+                        <h4>{{ user_stats.boss }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-info">Admin</div>
+                        <h4>{{ user_stats.admin }}</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="small text-success">Engineer</div>
+                        <h4>{{ user_stats.engineer }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="text-center text-muted">
+                    <small>Total Users: {{ user_stats.total }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Time-based Maintenance Data -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm animate__animated animate__fadeIn animate__delay-3s">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Maintenance Activity Over Time</h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px;">
+                    <canvas id="maintenance-time-chart"></canvas>
+                </div>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{{ url_for('reports.generate_pdf', report_type='maintenance') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-file-pdf me-1"></i>Generate PDF Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Time-based maintenance chart
+        const timeCtx = document.getElementById('maintenance-time-chart');
+        const timeData = {{ time_series_data|tojson }};
+        
+        new Chart(timeCtx, {
+            type: 'line',
+            data: {
+                labels: timeData.dates,
+                datasets: [{
+                    label: 'Maintenance Tasks',
+                    data: timeData.maintenance_counts,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Tasks'
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return 'Date: ' + tooltipItems[0].label;
+                            },
+                            label: function(context) {
+                                return 'Tasks: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000
+                }
+            }
+        });
+    });
+</script>
+{% endblock %} 

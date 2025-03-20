@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaintenanceTrackPro - System Flowchart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @page {
+            size: landscape;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .flowchart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 1600px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0d6efd;
+        }
+        .flowchart {
+            position: relative;
+            margin: 0 auto;
+            min-width: 1400px;
+        }
+        .node {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+            min-width: 180px;
+            z-index: 2;
+        }
+        .connector {
+            position: absolute;
+            border-left: 3px solid #0d6efd;
+            z-index: 1;
+        }
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid #0d6efd;
+            z-index: 1;
+        }
+        .horizontal-connector {
+            position: absolute;
+            height: 3px;
+            background-color: #0d6efd;
+            z-index: 1;
+        }
+        /* Shapes */
+        .process {
+            background-color: #d1e7ff;
+            border: 2px solid #0d6efd;
+            border-radius: 5px;
+        }
+        .user-input {
+            background-color: #d7f5e3;
+            border: 2px solid #198754;
+            transform: skew(-20deg);
+            border-radius: 5px;
+        }
+        .user-input span {
+            display: inline-block;
+            transform: skew(20deg);
+        }
+        .decision {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            transform: rotate(45deg);
+            width: 160px;
+            height: 160px;
+        }
+        .decision span {
+            display: inline-block;
+            transform: rotate(-45deg);
+            margin-top: 60px;
+        }
+        .legend {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .legend-shape {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            display: inline-block;
+        }
+        .direction-label {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: #0d6efd;
+            z-index: 3;
+        }
+        .section-heading {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        /* Adjusted for better printing */
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .flowchart-container {
+                box-shadow: none;
+                padding: 0;
+            }
+            @page {
+                size: landscape;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart-container">
+        <h1 class="title">MaintenanceTrackPro System Flowchart</h1>
+        
+        <div class="flowchart">
+            <!-- System Flow - Top Section -->
+            <div class="row text-center mb-5">
+                <div class="col-12 mb-3">
+                    <h4 class="section-heading">User Access Flow</h4>
+                </div>
+                <!-- Login Section -->
+                <div class="col-2">
+                    <div class="node user-input">
+                        <span>User Login</span>
+                    </div>
+                </div>
+                
+                <!-- Horizontal connector from Login to Role Decision -->
+                <div class="horizontal-connector" style="left: 230px; top: 125px; width: 100px;"></div>
+                <div class="arrow" style="left: 325px; top: 120px; transform: rotate(-90deg);"></div>
+                
+                <!-- User Role Decision -->
+                <div class="col-3">
+                    <div class="node decision mx-auto">
+                        <span>User Role?</span>
+                    </div>
+                </div>
+                
+                <!-- Horizontal connectors from decision to dashboards -->
+                <div class="horizontal-connector" style="left: 465px; top: 125px; width: 650px;"></div>
+                
+                <!-- Vertical connectors to each dashboard -->
+                <div class="connector" style="left: 560px; top: 125px; height: 70px;"></div>
+                <div class="connector" style="left: 790px; top: 125px; height: 70px;"></div>
+                <div class="connector" style="left: 1015px; top: 125px; height: 70px;"></div>
+                
+                <div class="arrow" style="left: 550px; top: 195px;"></div>
+                <div class="arrow" style="left: 780px; top: 195px;"></div>
+                <div class="arrow" style="left: 1005px; top: 195px;"></div>
+                
+                <!-- Role Labels -->
+                <div class="direction-label" style="left: 530px; top: 165px;">Engineer</div>
+                <div class="direction-label" style="left: 765px; top: 165px;">Admin</div>
+                <div class="direction-label" style="left: 1000px; top: 165px;">Boss</div>
+            </div>
+
+            <!-- Dashboards Row -->
+            <div class="row text-center mb-5">
+                <div class="col-4">
+                    <div class="node process">
+                        Engineer Dashboard
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="node process">
+                        Admin Dashboard
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="node process">
+                        Boss Dashboard
+                    </div>
+                </div>
+                
+                <!-- Connectors from dashboards -->
+                <div class="connector" style="left: 190px; top: 245px; height: 70px;"></div>
+                <div class="connector" style="left: 560px; top: 245px; height: 70px;"></div>
+                <div class="connector" style="left: 1010px; top: 245px; height: 70px;"></div>
+                
+                <div class="arrow" style="left: 182px; top: 315px;"></div>
+                <div class="arrow" style="left: 552px; top: 315px;"></div>
+                <div class="arrow" style="left: 1002px; top: 315px;"></div>
+            </div>
+
+            <!-- Main Functions -->
+            <div class="row text-center mb-5">
+                <div class="col-12 mb-3">
+                    <h4 class="section-heading">User Functions</h4>
+                </div>
+                <!-- Engineer Functions -->
+                <div class="col-4">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="node user-input mb-3">
+                                <span>View Equipment Health</span>
+                            </div>
+                            <div class="connector" style="left: 190px; top: 385px; height: 30px;"></div>
+                            <div class="arrow" style="left: 182px; top: 415px;"></div>
+                            
+                            <div class="node user-input mb-3">
+                                <span>Schedule Maintenance</span>
+                            </div>
+                            <div class="connector" style="left: 190px; top: 465px; height: 30px;"></div>
+                            <div class="arrow" style="left: 182px; top: 495px;"></div>
+                            
+                            <div class="node user-input">
+                                <span>Complete Tasks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admin Functions -->
+                <div class="col-4">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="node user-input mb-3">
+                                <span>Manage Users</span>
+                            </div>
+                            <div class="connector" style="left: 560px; top: 385px; height: 30px;"></div>
+                            <div class="arrow" style="left: 552px; top: 415px;"></div>
+                            
+                            <div class="node user-input mb-3">
+                                <span>Manage Equipment</span>
+                            </div>
+                            <div class="connector" style="left: 560px; top: 465px; height: 30px;"></div>
+                            <div class="arrow" style="left: 552px; top: 495px;"></div>
+                            
+                            <div class="node user-input">
+                                <span>System Settings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Boss Functions -->
+                <div class="col-4">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="node user-input mb-3">
+                                <span>View Analytics</span>
+                            </div>
+                            <div class="connector" style="left: 1010px; top: 385px; height: 30px;"></div>
+                            <div class="arrow" style="left: 1002px; top: 415px;"></div>
+                            
+                            <div class="node user-input mb-3">
+                                <span>Monitor Maintenance</span>
+                            </div>
+                            <div class="connector" style="left: 1010px; top: 465px; height: 30px;"></div>
+                            <div class="arrow" style="left: 1002px; top: 495px;"></div>
+                            
+                            <div class="node user-input">
+                                <span>Generate Reports</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Workflow -->
+            <div class="row text-center mb-5">
+                <div class="col-12 mb-3">
+                    <h4 class="section-heading">Maintenance Workflow</h4>
+                </div>
+                
+                <div class="col-2">
+                    <div class="node user-input">
+                        <span>QR Code Scan / Manual Selection</span>
+                    </div>
+                </div>
+                
+                <!-- Horizontal connector to Equipment Health Check -->
+                <div class="horizontal-connector" style="left: 250px; top: 625px; width: 100px;"></div>
+                <div class="arrow" style="left: 350px; top: 620px; transform: rotate(-90deg);"></div>
+                
+                <div class="col-2">
+                    <div class="node process">
+                        Equipment Health Check
+                    </div>
+                </div>
+                
+                <!-- Horizontal connector to Decision -->
+                <div class="horizontal-connector" style="left: 450px; top: 625px; width: 100px;"></div>
+                <div class="arrow" style="left: 550px; top: 620px; transform: rotate(-90deg);"></div>
+                
+                <div class="col-2">
+                    <div class="node decision mx-auto">
+                        <span>Maintenance Required?</span>
+                    </div>
+                </div>
+                
+                <!-- Horizontal connectors from decision -->
+                <div class="horizontal-connector" style="left: 660px; top: 625px; width: 500px;"></div>
+                
+                <!-- Vertical connectors to each path -->
+                <div class="connector" style="left: 760px; top: 625px; height: 70px;"></div>
+                <div class="connector" style="left: 1060px; top: 625px; height: 70px;"></div>
+                
+                <div class="arrow" style="left: 752px; top: 695px;"></div>
+                <div class="arrow" style="left: 1052px; top: 695px;"></div>
+                
+                <!-- Yes/No labels -->
+                <div class="direction-label" style="left: 735px; top: 665px;">Yes</div>
+                <div class="direction-label" style="left: 1035px; top: 665px;">No</div>
+            </div>
+            
+            <div class="row text-center mb-5">
+                <div class="col-6">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="node user-input mb-3">
+                                <span>Schedule Maintenance Task</span>
+                            </div>
+                            <div class="connector" style="left: 760px; top: 745px; height: 50px;"></div>
+                            <div class="arrow" style="left: 752px; top: 795px;"></div>
+                            
+                            <div class="node process mb-3">
+                                Assign Engineer
+                            </div>
+                            <div class="connector" style="left: 760px; top: 845px; height: 50px;"></div>
+                            <div class="arrow" style="left: 752px; top: 895px;"></div>
+                            
+                            <div class="node user-input mb-3">
+                                <span>Perform Maintenance</span>
+                            </div>
+                            <div class="connector" style="left: 760px; top: 945px; height: 50px;"></div>
+                            <div class="arrow" style="left: 752px; top: 995px;"></div>
+                            
+                            <div class="node process">
+                                Update Equipment Health
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-6">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="node process">
+                                Continue Monitoring
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend mt-5">
+                <h5>Legend</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="legend-item">
+                            <div class="legend-shape user-input"></div>
+                            <div>User Interaction (Parallelogram)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="legend-item">
+                            <div class="legend-shape process"></div>
+                            <div>System Process (Rectangle)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="legend-item">
+                            <div class="legend-shape decision"></div>
+                            <div style="margin-top: 5px;">Decision (Diamond)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

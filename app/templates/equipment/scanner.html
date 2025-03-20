@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i>QR Code Scanner</h5>
+            </div>
+            <div class="card-body">
+                <div id="qr-scanner" class="text-center">
+                    <p class="mb-3">Scan equipment QR codes to quickly access their information.</p>
+                    
+                    <button id="start-scanner" class="btn btn-primary animate__animated animate__pulse animate__infinite">
+                        <i class="fas fa-camera me-2"></i>Start Scanner
+                    </button>
+                    
+                    <div id="scanner-ui" class="mt-4 d-none">
+                        <div class="mb-3">
+                            <video id="scanner-preview" class="img-fluid rounded border" style="max-height: 400px;"></video>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button id="stop-scanner" class="btn btn-danger">
+                                <i class="fas fa-stop-circle me-2"></i>Stop Scanner
+                            </button>
+                        </div>
+                        
+                        <div id="scan-result"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="accordion" id="scanner-instructions">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructions-content">
+                                <i class="fas fa-info-circle me-2"></i>How to use the QR Scanner
+                            </button>
+                        </h2>
+                        <div id="instructions-content" class="accordion-collapse collapse" data-bs-parent="#scanner-instructions">
+                            <div class="accordion-body">
+                                <ol class="mb-0">
+                                    <li>Click the "Start Scanner" button above</li>
+                                    <li>Allow camera access when prompted</li>
+                                    <li>Point your camera at an equipment QR code</li>
+                                    <li>The system will automatically detect the code and redirect you to the equipment details</li>
+                                    <li>Click "Stop Scanner" if you want to cancel</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="alert alert-info">
+            <div class="d-flex">
+                <div class="me-3">
+                    <i class="fas fa-lightbulb fa-2x text-warning float"></i>
+                </div>
+                <div>
+                    <h5>Pro Tip</h5>
+                    <p class="mb-0">For best results, ensure the QR code is well-lit and directly facing your camera. The scanner works best when the code takes up a significant portion of the frame.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add custom animation for scanner loading
+    document.addEventListener('DOMContentLoaded', function() {
+        const startButton = document.getElementById('start-scanner');
+        startButton.addEventListener('click', function() {
+            // Show loading state
+            startButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Starting camera...';
+            startButton.disabled = true;
+            
+            // If camera isn't started within 5 seconds, reset button
+            setTimeout(() => {
+                if (document.getElementById('scanner-ui').classList.contains('d-none')) {
+                    startButton.innerHTML = '<i class="fas fa-camera me-2"></i>Start Scanner';
+                    startButton.disabled = false;
+                    alert('Could not access camera. Please check your permissions and try again.');
+                }
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %} 

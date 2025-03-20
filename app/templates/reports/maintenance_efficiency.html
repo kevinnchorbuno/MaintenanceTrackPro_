@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-chart-line me-2"></i>Maintenance Efficiency Report</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Reports
+            </a>
+            <a href="{{ url_for('reports.generate_pdf', report_type='maintenance') }}" class="btn btn-outline-primary">
+                <i class="fas fa-file-pdf me-1"></i>Export PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Efficiency Metrics -->
+<div class="row mb-4">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>On-Time Completion</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <div class="position-relative" style="width: 140px; height: 140px;">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="circle" stroke-dasharray="{{ metrics.on_time }}, 100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <text x="18" y="21" class="percentage">{{ metrics.on_time }}%</text>
+                        </svg>
+                    </div>
+                </div>
+                <h4 class="text-primary mb-2">{{ metrics.on_time }}%</h4>
+                <p class="text-muted">Tasks completed on time</p>
+                
+                <hr>
+                
+                <div class="small text-start">
+                    <p><i class="fas fa-info-circle text-info me-2"></i>Target completion rate is 85%</p>
+                    {% if metrics.on_time >= 85 %}
+                        <p class="text-success"><i class="fas fa-thumbs-up me-2"></i>Target achieved!</p>
+                    {% else %}
+                        <p class="text-danger"><i class="fas fa-thumbs-down me-2"></i>Below target by {{ 85 - metrics.on_time }}%</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn animate__delay-1s">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Average Completion Time</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <div class="time-display">
+                        <span class="days">{{ metrics.average_completion_days|int }}</span>
+                        <span class="time-label">days</span>
+                        <span class="hours">{{ (metrics.average_completion_days % 1 * 24)|int }}</span>
+                        <span class="time-label">hours</span>
+                    </div>
+                </div>
+                <h4 class="text-primary mb-2">{{ metrics.average_completion_days }} days</h4>
+                <p class="text-muted">Average time to complete tasks</p>
+                
+                <hr>
+                
+                <div class="small text-start">
+                    <p><i class="fas fa-info-circle text-info me-2"></i>Target time is 3.0 days</p>
+                    {% if metrics.average_completion_days <= 3.0 %}
+                        <p class="text-success"><i class="fas fa-thumbs-up me-2"></i>Target achieved!</p>
+                    {% else %}
+                        <p class="text-danger"><i class="fas fa-thumbs-down me-2"></i>Exceeds target by {{ (metrics.average_completion_days - 3.0)|round(1) }} days</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 animate__animated animate__fadeIn animate__delay-2s">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Overdue Rate</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <div class="position-relative" style="width: 140px; height: 140px;">
+                        <svg viewBox="0 0 36 36" class="circular-chart overdue">
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="circle" stroke-dasharray="{{ metrics.overdue_rate }}, 100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <text x="18" y="21" class="percentage">{{ metrics.overdue_rate }}%</text>
+                        </svg>
+                    </div>
+                </div>
+                <h4 class="text-primary mb-2">{{ metrics.overdue_rate }}%</h4>
+                <p class="text-muted">Tasks that were completed late</p>
+                
+                <hr>
+                
+                <div class="small text-start">
+                    <p><i class="fas fa-info-circle text-info me-2"></i>Target overdue rate is below 10%</p>
+                    {% if metrics.overdue_rate <= 10 %}
+                        <p class="text-success"><i class="fas fa-thumbs-up me-2"></i>Target achieved!</p>
+                    {% else %}
+                        <p class="text-danger"><i class="fas fa-thumbs-down me-2"></i>Above target by {{ metrics.overdue_rate - 10 }}%</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Completed Tasks Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Completed Maintenance Tasks</h5>
+            </div>
+            <div class="card-body">
+                {% if completed_tasks %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Equipment</th>
+                                    <th>Assigned To</th>
+                                    <th>Scheduled Date</th>
+                                    <th>Completed Date</th>
+                                    <th>Elapsed Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in completed_tasks %}
+                                    {% set is_overdue = task.completed_at and task.due_date and task.completed_at > task.due_date %}
+                                    <tr class="{% if is_overdue %}table-warning{% endif %} animate__animated animate__fadeIn">
+                                        <td>{{ task.title }}</td>
+                                        <td>{{ task.equipment.name }}</td>
+                                        <td>{{ task.user.username }}</td>
+                                        <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '-' }}</td>
+                                        <td>{{ task.completed_at.strftime('%Y-%m-%d') if task.completed_at else '-' }}</td>
+                                        <td>
+                                            {% if task.completed_at and task.created_at %}
+                                                {% set days = (task.completed_at - task.created_at).days %}
+                                                {% if days == 0 %}
+                                                    <span class="text-success">Same day</span>
+                                                {% elif days == 1 %}
+                                                    <span class="text-success">1 day</span>
+                                                {% elif days <= 3 %}
+                                                    <span class="text-primary">{{ days }} days</span>
+                                                {% elif days <= 7 %}
+                                                    <span class="text-warning">{{ days }} days</span>
+                                                {% else %}
+                                                    <span class="text-danger">{{ days }} days</span>
+                                                {% endif %}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if is_overdue %}bg-warning{% else %}bg-success{% endif %}">
+                                                {% if is_overdue %}Overdue{% else %}On Time{% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No completed maintenance tasks found.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Total Completed Tasks: {{ completed_tasks|length }}</span>
+                    <span>Generated: {{ now().strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .circular-chart {
+        display: block;
+        width: 100%;
+        max-width: 140px;
+    }
+
+    .circle-bg {
+        fill: none;
+        stroke: #eee;
+        stroke-width: 3;
+    }
+
+    .circle {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke: #007bff;
+        animation: progress 1s ease-out forwards;
+    }
+
+    .circular-chart.overdue .circle {
+        stroke: #dc3545;
+    }
+
+    .percentage {
+        fill: #666;
+        font-family: sans-serif;
+        font-size: 0.5em;
+        text-anchor: middle;
+    }
+
+    .time-display {
+        text-align: center;
+    }
+
+    .days, .hours {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin: 0 5px;
+    }
+
+    .time-label {
+        font-size: 14px;
+        color: #6c757d;
+        margin-right: 10px;
+    }
+
+    @keyframes progress {
+        0% {
+            stroke-dasharray: 0 100;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Helper function to simulate now() for the template
+    function now() {
+        return new Date();
+    }
+</script>
+{% endblock %} 

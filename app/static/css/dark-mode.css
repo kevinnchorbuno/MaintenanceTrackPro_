@@ -1,0 +1,74 @@
+/* Dark Mode Styles for MaintenanceTrackPro */
+
+/* Theme transition */
+.theme-transition {
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Custom dark mode colors for elements not handled by Bootstrap */
+[data-bs-theme="dark"] {
+    --custom-card-bg: #2b3035;
+    --custom-card-border: #444;
+    --custom-hover-bg: #374151;
+    --custom-text-muted: #adb5bd;
+}
+
+[data-bs-theme="light"] {
+    --custom-card-bg: #ffffff;
+    --custom-card-border: #dee2e6;
+    --custom-hover-bg: #f8f9fa;
+    --custom-text-muted: #6c757d;
+}
+
+/* Dark mode custom card styles */
+[data-bs-theme="dark"] .card {
+    background-color: var(--custom-card-bg);
+    border-color: var(--custom-card-border);
+}
+
+/* Dark mode footer */
+[data-bs-theme="dark"] footer {
+    background-color: #212529 !important;
+    color: #e9ecef;
+}
+
+/* Dark mode skeleton loader */
+[data-bs-theme="dark"] .skeleton-loader {
+    background: linear-gradient(90deg, #343a40 25%, #495057 50%, #343a40 75%);
+}
+
+/* Custom styles for health indicators */
+[data-bs-theme="dark"] .health-bar-container {
+    background-color: #343a40;
+}
+
+/* Custom notification dropdown */
+[data-bs-theme="dark"] .notification-dropdown {
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: var(--custom-hover-bg);
+}
+
+/* Loading overlay for dark mode */
+[data-bs-theme="dark"] #loading-overlay {
+    background-color: rgba(33, 37, 41, 0.8) !important;
+}
+
+/* QR scanner styles for dark mode */
+[data-bs-theme="dark"] #scanner-ui {
+    background-color: #212529;
+    border-color: #495057;
+}
+
+/* Custom text muted for dark mode */
+[data-bs-theme="dark"] .text-muted {
+    color: var(--custom-text-muted) !important;
+}
+
+/* Dashboard card styles for dark mode */
+[data-bs-theme="dark"] .stats-card {
+    background-color: var(--custom-card-bg);
+} 

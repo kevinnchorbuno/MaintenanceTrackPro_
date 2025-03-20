@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-tasks me-2"></i>{{ maintenance.title }}</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('maintenance.edit', id=maintenance.id) }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            
+            {% if maintenance.status == 'scheduled' %}
+                <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='start') }}" class="btn btn-outline-info">
+                    <i class="fas fa-play me-1"></i>Start
+                </a>
+            {% endif %}
+            
+            {% if maintenance.status != 'completed' and maintenance.status != 'cancelled' %}
+                <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='complete') }}" class="btn btn-outline-success">
+                    <i class="fas fa-check me-1"></i>Complete
+                </a>
+                <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='cancel') }}" class="btn btn-outline-danger">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Task Details -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Task Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Status</h6>
+                        <span class="badge bg-{% if maintenance.status == 'completed' %}success{% elif maintenance.status == 'in_progress' %}info{% elif maintenance.status == 'cancelled' %}secondary{% else %}warning{% endif %} mb-3">
+                            {{ maintenance.status|replace('_', ' ')|capitalize }}
+                        </span>
+                        
+                        <h6 class="fw-bold">Priority</h6>
+                        <span class="badge priority-{{ maintenance.priority }} mb-3">
+                            {{ maintenance.priority|capitalize }}
+                        </span>
+                        
+                        <h6 class="fw-bold">Equipment</h6>
+                        <p><a href="{{ url_for('equipment.view', id=maintenance.equipment_id) }}">{{ maintenance.equipment.name }}</a></p>
+                        
+                        <h6 class="fw-bold">Assigned To</h6>
+                        <p>
+                            {% if maintenance.user_id %}
+                                {{ maintenance.user.username }}
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Created</h6>
+                        <p>{{ maintenance.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        
+                        <h6 class="fw-bold">Due Date</h6>
+                        <p class="{% if maintenance.is_overdue() %}text-danger fw-bold{% endif %}">
+                            {% if maintenance.due_date %}
+                                {{ maintenance.due_date.strftime('%Y-%m-%d %H:%M') }}
+                                {% if maintenance.is_overdue() %}<i class="fas fa-exclamation-circle ms-1"></i> Overdue{% endif %}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </p>
+                        
+                        <h6 class="fw-bold">Completed Date</h6>
+                        <p>
+                            {% if maintenance.completed_date %}
+                                {{ maintenance.completed_date.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                <span class="text-muted">Not completed yet</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="fw-bold">Description</h6>
+                <p class="mb-0">{{ maintenance.description or 'No description provided.' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Equipment Info -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Equipment Info</h5>
+            </div>
+            <div class="card-body">
+                {% if maintenance.equipment.image_path %}
+                    <img src="{{ url_for('static', filename=maintenance.equipment.image_path) }}" alt="{{ maintenance.equipment.name }}" class="img-fluid mb-3 equipment-img">
+                {% else %}
+                    <div class="text-center p-4 mb-3 bg-light">
+                        <i class="fas fa-cog fa-5x text-secondary"></i>
+                    </div>
+                {% endif %}
+                
+                <h5>{{ maintenance.equipment.name }}</h5>
+                <p class="text-muted">{{ maintenance.equipment.description|truncate(100) or 'No description available.' }}</p>
+                
+                <h6 class="fw-bold">Health Score</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="health-bar-container flex-grow-1 me-2">
+                        <div class="health-bar health-status-{% if maintenance.equipment.health_score >= 70 %}healthy{% elif maintenance.equipment.health_score >= 60 %}warning{% else %}critical{% endif %}" style="width: {{ maintenance.equipment.health_score }}%"></div>
+                    </div>
+                    <span class="badge bg-{% if maintenance.equipment.health_score >= 70 %}success{% elif maintenance.equipment.health_score >= 60 %}warning{% else %}danger{% endif %}">
+                        {{ maintenance.equipment.health_score|round|int }}%
+                    </span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('equipment.view', id=maintenance.equipment_id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View Equipment
+                    </a>
+                    <a href="{{ url_for('maintenance.add', equipment_id=maintenance.equipment_id) }}" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-1"></i>New Maintenance Task
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('maintenance.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-1"></i>View All Tasks
+                    </a>
+                    
+                    {% if maintenance.status != 'completed' and maintenance.status != 'cancelled' %}
+                        {% if maintenance.status == 'scheduled' %}
+                            <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='start') }}" class="btn btn-info">
+                                <i class="fas fa-play me-1"></i>Start Task
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='complete') }}" class="btn btn-success">
+                            <i class="fas fa-check me-1"></i>Mark Complete
+                        </a>
+                        <a href="{{ url_for('maintenance.change_status', id=maintenance.id, status='cancel') }}" class="btn btn-danger">
+                            <i class="fas fa-times me-1"></i>Cancel Task
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('maintenance.delete', id=maintenance.id) }}" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this maintenance task? This action cannot be undone.');">
+                        <i class="fas fa-trash me-1"></i>Delete Task
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

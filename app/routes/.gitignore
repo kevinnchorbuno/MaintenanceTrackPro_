@@ -1,0 +1,24 @@
+# Environment variables
+.env
+.flaskenv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# User-uploaded files
+app/static/images/equipment/*
+app/static/images/qrcodes/*
+!app/static/images/equipment/.gitkeep
+!app/static/images/qrcodes/.gitkeep

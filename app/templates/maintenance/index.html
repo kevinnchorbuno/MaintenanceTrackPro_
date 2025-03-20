@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="fas fa-tasks me-2"></i>Maintenance Tasks</h2>
+    </div>
+</div>
+
+<!-- Tabs for different task statuses -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="maintenanceTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="scheduled-tab" data-bs-toggle="tab" data-bs-target="#scheduled" type="button" role="tab" aria-controls="scheduled" aria-selected="true">
+                            <i class="fas fa-calendar me-1"></i>Scheduled
+                            <span class="badge bg-secondary">{{ scheduled_tasks|length }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="in-progress-tab" data-bs-toggle="tab" data-bs-target="#in-progress" type="button" role="tab" aria-controls="in-progress" aria-selected="false">
+                            <i class="fas fa-spinner me-1"></i>In Progress
+                            <span class="badge bg-secondary">{{ in_progress_tasks|length }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">
+                            <i class="fas fa-check-circle me-1"></i>Completed
+                            <span class="badge bg-secondary">{{ completed_tasks|length }}</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="maintenanceTabsContent">
+                    <!-- Scheduled Tasks -->
+                    <div class="tab-pane fade show active" id="scheduled" role="tabpanel" aria-labelledby="scheduled-tab">
+                        {% if scheduled_tasks %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Equipment</th>
+                                            <th>Priority</th>
+                                            <th>Due Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in scheduled_tasks %}
+                                            <tr>
+                                                <td>{{ task.title }}</td>
+                                                <td><a href="{{ url_for('equipment.view', id=task.equipment_id) }}">{{ task.equipment.name }}</a></td>
+                                                <td>
+                                                    <span class="badge priority-{{ task.priority }}">
+                                                        {{ task.priority|capitalize }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if task.due_date %}
+                                                        <span class="{% if task.is_overdue() %}text-danger fw-bold{% endif %}">
+                                                            {{ task.due_date.strftime('%Y-%m-%d') }}
+                                                            {% if task.is_overdue() %}<i class="fas fa-exclamation-circle ms-1"></i>{% endif %}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">Not set</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="{{ url_for('maintenance.view', id=task.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('maintenance.change_status', id=task.id, status='start') }}" class="btn btn-sm btn-outline-info" title="Start">
+                                                            <i class="fas fa-play"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('maintenance.change_status', id=task.id, status='complete') }}" class="btn btn-sm btn-outline-success" title="Complete">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('maintenance.edit', id=task.id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center">No scheduled maintenance tasks found.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- In Progress Tasks -->
+                    <div class="tab-pane fade" id="in-progress" role="tabpanel" aria-labelledby="in-progress-tab">
+                        {% if in_progress_tasks %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Equipment</th>
+                                            <th>Priority</th>
+                                            <th>Due Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in in_progress_tasks %}
+                                            <tr>
+                                                <td>{{ task.title }}</td>
+                                                <td><a href="{{ url_for('equipment.view', id=task.equipment_id) }}">{{ task.equipment.name }}</a></td>
+                                                <td>
+                                                    <span class="badge priority-{{ task.priority }}">
+                                                        {{ task.priority|capitalize }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if task.due_date %}
+                                                        <span class="{% if task.is_overdue() %}text-danger fw-bold{% endif %}">
+                                                            {{ task.due_date.strftime('%Y-%m-%d') }}
+                                                            {% if task.is_overdue() %}<i class="fas fa-exclamation-circle ms-1"></i>{% endif %}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">Not set</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="{{ url_for('maintenance.view', id=task.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('maintenance.change_status', id=task.id, status='complete') }}" class="btn btn-sm btn-outline-success" title="Complete">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('maintenance.edit', id=task.id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center">No maintenance tasks in progress.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Completed Tasks -->
+                    <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                        {% if completed_tasks %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Equipment</th>
+                                            <th>Completed Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in completed_tasks %}
+                                            <tr>
+                                                <td>{{ task.title }}</td>
+                                                <td><a href="{{ url_for('equipment.view', id=task.equipment_id) }}">{{ task.equipment.name }}</a></td>
+                                                <td>
+                                                    {% if task.completed_date %}
+                                                        {{ task.completed_date.strftime('%Y-%m-%d') }}
+                                                    {% else %}
+                                                        <span class="text-muted">Unknown</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="{{ url_for('maintenance.view', id=task.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center">No completed maintenance tasks found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

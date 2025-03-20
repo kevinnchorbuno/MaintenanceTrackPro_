@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-heartbeat me-2"></i>Equipment Health Report</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Reports
+            </a>
+            <a href="{{ url_for('reports.generate_pdf', report_type='equipment') }}" class="btn btn-outline-primary">
+                <i class="fas fa-file-pdf me-1"></i>Export PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Equipment</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="health_filter" class="form-label">Health Status</label>
+                        <select class="form-select" id="health_filter" name="health_status">
+                            <option value="">All Statuses</option>
+                            <option value="healthy" {% if request.args.get('health_status') == 'healthy' %}selected{% endif %}>Healthy</option>
+                            <option value="warning" {% if request.args.get('health_status') == 'warning' %}selected{% endif %}>Warning</option>
+                            <option value="critical" {% if request.args.get('health_status') == 'critical' %}selected{% endif %}>Critical</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search Equipment</label>
+                        <input type="text" class="form-control" id="search" name="search" value="{{ request.args.get('search', '') }}" placeholder="Enter equipment name...">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search me-1"></i>Filter
+                        </button>
+                        <a href="{{ url_for('reports.equipment_health') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment Health Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Equipment Health Status</h5>
+            </div>
+            <div class="card-body">
+                {% if equipment_list %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Equipment Name</th>
+                                    <th>Description</th>
+                                    <th>Health Score</th>
+                                    <th>Status</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipment in equipment_list %}
+                                    <tr class="{% if equipment.health_score < 60 %}table-danger{% elif equipment.health_score < 70 %}table-warning{% else %}table-success{% endif %} animate__animated animate__fadeIn">
+                                        <td>{{ equipment.name }}</td>
+                                        <td>{{ equipment.description|truncate(50) }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="health-bar-container flex-grow-1 me-2" style="background-color: #e9ecef; height: 10px; border-radius: 5px; overflow: hidden;">
+                                                    <div class="health-bar" style="height: 100%; width: {{ equipment.health_score }}%; background-color: {% if equipment.health_score >= 70 %}#28a745{% elif equipment.health_score >= 60 %}#ffc107{% else %}#dc3545{% endif %};"></div>
+                                                </div>
+                                                <span class="badge bg-{% if equipment.health_score >= 70 %}success{% elif equipment.health_score >= 60 %}warning{% else %}danger{% endif %}">
+                                                    {{ equipment.health_score|round|int }}%
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if equipment.health_score >= 70 %}success{% elif equipment.health_score >= 60 %}warning{% else %}danger{% endif %}">
+                                                {% if equipment.health_score >= 70 %}
+                                                    Healthy
+                                                {% elif equipment.health_score >= 60 %}
+                                                    Warning
+                                                {% else %}
+                                                    Critical
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>{{ equipment.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('equipment.view', id=equipment.id) }}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('equipment.history', id=equipment.id) }}" class="btn btn-outline-info">
+                                                    <i class="fas fa-chart-line"></i>
+                                                </a>
+                                                <a href="{{ url_for('maintenance.add', equipment_id=equipment.id) }}" class="btn btn-outline-success">
+                                                    <i class="fas fa-tools"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No equipment found matching your criteria.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Total Equipment: {{ equipment_list|length }}</span>
+                    <button class="btn btn-sm btn-outline-secondary" id="refresh-data">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to table rows on hover
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseover', function() {
+                this.classList.add('pulse');
+            });
+            row.addEventListener('mouseout', function() {
+                this.classList.remove('pulse');
+            });
+        });
+        
+        // Refresh button functionality
+        document.getElementById('refresh-data').addEventListener('click', function() {
+            // Show loading animation
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Refreshing...';
+            this.disabled = true;
+            
+            // Reload the page after a short delay to simulate refresh
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %} 

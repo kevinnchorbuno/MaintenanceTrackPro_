@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Boss Dashboard</h2>
+        <p class="text-muted">Welcome, {{ current_user.username }}! Monitor equipment status and team performance.</p>
+    </div>
+</div>
+
+<!-- Equipment Health Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Equipment Health Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="progress mb-4" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ equipment_stats.healthy_percent }}%">
+                                Healthy ({{ equipment_stats.healthy_percent|round|int }}%)
+                            </div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ equipment_stats.warning_percent }}%">
+                                Warning ({{ equipment_stats.warning_percent|round|int }}%)
+                            </div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ equipment_stats.critical_percent }}%">
+                                Critical ({{ equipment_stats.critical_percent|round|int }}%)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="border rounded p-2 mb-2">
+                                    <h3 class="text-success">{{ equipment_stats.healthy }}</h3>
+                                    <p class="mb-0">Healthy</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="border rounded p-2 mb-2">
+                                    <h3 class="text-warning">{{ equipment_stats.warning }}</h3>
+                                    <p class="mb-0">Warning</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="border rounded p-2 mb-2">
+                                    <h3 class="text-danger">{{ equipment_stats.critical }}</h3>
+                                    <p class="mb-0">Critical</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('equipment.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-1"></i>View All Equipment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row mb-4">
+    <!-- Equipment Stats -->
+    <div class="col-md-3">
+        <div class="card stats-card stats-card-primary mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Total Equipment</h5>
+                        <h2 class="mb-0">{{ equipment_stats.total }}</h2>
+                    </div>
+                    <div class="stats-icon text-primary">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Maintenance Stats -->
+    <div class="col-md-3">
+        <div class="card stats-card stats-card-success mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Maintenance Tasks</h5>
+                        <h2 class="mb-0">{{ maintenance_stats.total }}</h2>
+                    </div>
+                    <div class="stats-icon text-success">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+                <div class="small mt-2">
+                    <span class="text-success">{{ maintenance_stats.completed }}</span> completed,
+                    <span class="text-warning">{{ maintenance_stats.in_progress }}</span> in progress
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Stats -->
+    <div class="col-md-3">
+        <div class="card stats-card stats-card-warning mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Team Members</h5>
+                        <h2 class="mb-0">{{ user_stats.total }}</h2>
+                    </div>
+                    <div class="stats-icon text-warning">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="small mt-2">
+                    <span class="text-primary">{{ user_stats.boss }}</span> boss,
+                    <span class="text-info">{{ user_stats.admin }}</span> admin,
+                    <span class="text-success">{{ user_stats.engineer }}</span> engineers
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tasks Status -->
+    <div class="col-md-3">
+        <div class="card stats-card stats-card-danger mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Scheduled Tasks</h5>
+                        <h2 class="mb-0">{{ maintenance_stats.scheduled }}</h2>
+                    </div>
+                    <div class="stats-icon text-danger">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Notifications -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Recent Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                            <div class="list-group-item notification-item notification-{{ notification.type }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ notification.title }}</h6>
+                                    <small>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <p class="mb-1">{{ notification.message }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">No recent notifications.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
